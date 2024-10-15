@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Irina  Blatsky](https://up.htmlacademy.ru/javascript/33/user/2455731).
-* Наставник: `Неизвестно`.
+* Наставник: `Павел Ившин`(https://htmlacademy.ru/profile/id818775).
 
 ---
 

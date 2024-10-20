@@ -20,3 +20,4 @@ palindrome('рототор');
 palindrome('Леша на полке клопа нашел');
 palindrome('ДовОд');
 palindrome('дед');
+palindrome('топот');

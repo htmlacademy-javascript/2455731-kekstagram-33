@@ -19,3 +19,4 @@ const palindrome = function isPalindrome(str) {
 console.log(palindrome('рототор'));
 console.log(palindrome('Леша на полке клопа нашел'));
 console.log(palindrome('ДовОд'));
+console.log(palindrome('дед'));

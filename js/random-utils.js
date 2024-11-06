@@ -1,4 +1,3 @@
-/**получение случайного числа */
 function getRandomInteger(min, max) {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
@@ -7,14 +6,13 @@ function getRandomInteger(min, max) {
   return Math.floor(result);
 }
 
-/**функция- получение идентификатора*/
-
 function createRandomId(min, max) {
   const previousValues = [];
 
   return function () {
     let currentValue = getRandomInteger(min, max);
     if (previousValues.length >= (max - min + 1)) {
+      //console.log(`Перебраны все числа из диапазона от ' + min + ' до ' + max`);
       return null;
     }
     while (previousValues.includes(currentValue)) {
@@ -25,37 +23,25 @@ function createRandomId(min, max) {
   };
 }
 
-/**функция по получению рандомного индекса из массива */
-
 function getRandomArrayElem(elems) {
   return elems[getRandomInteger(0, elems.length - 1)];
 }
-
-
-/**функция-номер аватара */
 
 function getRandomAvatarPath(min, max) {
   const randomNumber = getRandomInteger(min, max);
   return `img/avatar-${randomNumber}.svg`;
 }
 
-/**функция-создание URL */
-
 function getRandomUrlPath(min, max) {
   const randomNumber = getRandomInteger(min, max);
   return `photos/${randomNumber}.jpg`;
 }
 
-export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath };
-
-/**функция для аватара и фото */
-
-/*function getRandomValue(template, min, max) {
-  const randomNumber = getRandomInteger(min, max);
-  return template.replace(/{{number}}/g, randomNumber);
+function isEscapeKey (evt) {
+  return evt.key === 'Escape';
 }
 
-const randomAvatarPath = getRandomValue('img/avatar-{{number}}.svg', 1, 6);
-const randomPhotoPath = getRandomValue('photos/{{number}}.jpg', 1, 25);*/
-
-
+function isEnterKey(evt) {
+  return evt.key === 'Enter';
+}
+export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath, isEscapeKey, isEnterKey };

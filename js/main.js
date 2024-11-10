@@ -1,25 +1,13 @@
-import { createdPhotoObjects, renderPhotoList } from './photo-thumbnails';
+console.log('Перезагрузка страницы');
 
-renderPhotoList();
+import { createdPhotoObjects, renderPhotoList } from './photo-thumbnails';
 
 import { renderComments, openFullPhoto, closeFullPhoto } from './full-size-photo';
 
-if (createdPhotoObjects) {
-  //
-}
+import { openEditorPicture, closeEditorPicture } from './upload-photo-form';
 
-if (renderPhotoList) {
-  //
-}
+renderPhotoList();
 
-if (renderComments) {
-  //
-}
-
-if (openFullPhoto) {
-  //
-}
-
-if (closeFullPhoto) {
+if (createdPhotoObjects, renderPhotoList,renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture) {
   //
 }

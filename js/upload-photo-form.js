@@ -10,9 +10,6 @@ const closeEditor = document.querySelector('.img-upload__cancel');
 const uploadFormInputsContainer = document.querySelector('.img-upload__text');
 const uploadFormInputs = uploadFormInputsContainer.querySelectorAll('input, textarea');
 const uploadSubmitButton = document.querySelector('.img-upload__submit');
-const hashtagValue = document.querySelector('.text__hashtags').value;
-const commentValue = document.querySelector('.text__description').value;
-const photoFile = document.querySelector('.img-upload__input [type="file"]').files[0];
 
 
 const submitButtonText = {
@@ -62,7 +59,7 @@ function closeEditorPicture() {
 
   slider.noUiSlider.set(100);
   effects.removeEventListener('change', getEffect);
-  uploadForm.reset();
+  //uploadForm.reset();
   if (validator) {
     validator.reset();
   }
@@ -98,6 +95,10 @@ const setFormSubmit = (onSuccess, onError) => {
     if (isValid) {
       blockSubmitButton();
 
+      const hashtagValue = document.querySelector('.text__hashtags').value;
+      const commentValue = document.querySelector('.text__description').value;
+      const photoFile = document.querySelector('#upload-file').files[0];
+
       const formData = new FormData(evt.target);
       fetch('https://32.javascript.htmlacademy.pro/kekstagram',
         {
@@ -107,9 +108,13 @@ const setFormSubmit = (onSuccess, onError) => {
       ).then(() => {
         unblockSubmitButton();
         onSuccess();
-      })
 
+        document.querySelector('.text__hashtags').value = '';
+        document.querySelector('.text__description').value = '';
+        document.querySelector('#upload-file').value = '';
+      })
         .catch((err) => {
+          unblockSubmitButton();
           onError(err);
           document.querySelector('.text__hashtags').value = hashtagValue;
           document.querySelector('.text__description').value = commentValue;

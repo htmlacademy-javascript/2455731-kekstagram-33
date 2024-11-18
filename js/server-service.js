@@ -1,5 +1,7 @@
 import { renderPhotoList } from './photo-thumbnails';
 import { isEscapeKey } from './random-utils';
+import { closeEditorPicture, setFormSubmit } from './upload-photo-form';
+
 
 const PICTURES__COUNT = 25;
 
@@ -97,4 +99,13 @@ function loadingData (onError) {
     });
 }
 
+setFormSubmit(
+  () => {
+    closeEditorPicture();
+    showSuccessMessage();
+  },
+  () => {
+    showErrorMessage();
+  }
+);
 export { loadingData, getErrorMessage };

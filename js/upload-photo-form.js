@@ -10,6 +10,9 @@ const closeEditor = document.querySelector('.img-upload__cancel');
 const uploadFormInputsContainer = document.querySelector('.img-upload__text');
 const uploadFormInputs = uploadFormInputsContainer.querySelectorAll('input, textarea');
 const uploadSubmitButton = document.querySelector('.img-upload__submit');
+const hashtagValue = document.querySelector('.text__hashtags').value;
+const commentValue = document.querySelector('.text__description').value;
+const photoFile = document.querySelector('.img-upload__input [type="file"]').files[0];
 
 
 const submitButtonText = {
@@ -101,13 +104,21 @@ const setFormSubmit = (onSuccess, onError) => {
           method: 'POST',
           body: formData,
         }
-      ).then(onSuccess)
-        .then(() => unblockSubmitButton())
+      ).then(() => {
+        unblockSubmitButton();
+        onSuccess();
+      })
+
         .catch((err) => {
           onError(err);
-          
+          document.querySelector('.text__hashtags').value = hashtagValue;
+          document.querySelector('.text__description').value = commentValue;
+          if (photoFile) {
+            const imgPreview = document.querySelector('.img-upload__preview img');
+            const objectURL = URL.createObjectURL(photoFile);
+            imgPreview.src = objectURL;
+          }
         });
-
     }
   });
 };

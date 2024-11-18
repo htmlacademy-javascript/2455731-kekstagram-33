@@ -1,17 +1,8 @@
-const effectValue = document.querySelector('.effect-level__value');// скрытое поле для отправки на сервер значений слайдера
-//const picturePreviewContainer = document.querySelector('.img-upload__preview');
+const effectValue = document.querySelector('.effect-level__value');
 const picturePreview = document.querySelector('.img-upload__preview img');
 const sliderContainer = document.querySelector('.img-upload__effect-level');
 const slider = sliderContainer.querySelector('.effect-level__slider');
-//const defaultEffect = document.querySelector('#effect-none');
-//const effectChrome = document.querySelector('#effect-chrome');
-//const effectSepia = document.querySelector('#effect-sepia');
-//const effectMarvin = document.querySelector('#effect-marvin');
-//const effectPhobos = document.querySelector('#effect-phobos');
-//const effectHeat = document.querySelector('#effect-heat');
 const effects = document.querySelector('.effects__list');
-
-effectValue.value = 100;
 
 noUiSlider.create(slider, {
   range: {
@@ -23,9 +14,6 @@ noUiSlider.create(slider, {
   connect: 'lower',
 });
 
-slider.noUiSlider.on('update', () => {
-  effectValue.value = slider.noUiSlider.get();
-});
 
 function getEffect(evt) {
   if (evt.target.matches('input[type="radio"]')) {
@@ -37,12 +25,28 @@ function getEffect(evt) {
       slider.classList.add('hidden');
       sliderContainer.classList.add('hidden');
       picturePreview.style.filter = '';
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 100,
+        },
+        start: 100,
+        step: 1,
+      });
+      slider.noUiSlider.set(100);
       return;
     }
+
     slider.classList.remove('hidden');
     sliderContainer.classList.remove('hidden');
 
-    if (selectedEffectValue === 'chrome') {
+    updateSliderOptions(selectedEffectValue);
+  }
+}
+
+function updateSliderOptions(selectedEffectValue) {
+  switch (selectedEffectValue) {
+    case 'chrome':
       picturePreview.classList.add('effects__preview--chrome');
       slider.noUiSlider.updateOptions({
         range: {
@@ -51,16 +55,84 @@ function getEffect(evt) {
         },
         step: 0.1,
       });
-    } else if (selectedEffectValue === 'sepia') {
+      slider.noUiSlider.set(1);
+      break;
+    case 'sepia':
       picturePreview.classList.add('effects__preview--sepia');
-    } else if (selectedEffectValue === 'marvin') {
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 1,
+        },
+        step: 0.1,
+      });
+      slider.noUiSlider.set(1);
+      break;
+    case 'marvin':
       picturePreview.classList.add('effects__preview--marvin');
-    } else if (selectedEffectValue === 'phobos') {
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 100,
+        },
+        step: 1,
+      });
+      slider.noUiSlider.set(100);
+      break;
+    case 'phobos':
       picturePreview.classList.add('effects__preview--phobos');
-    } else if (selectedEffectValue === 'heat') {
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 3,
+        },
+        step: 0.1,
+      });
+      slider.noUiSlider.set(3);
+      break;
+    case 'heat':
       picturePreview.classList.add('effects__preview--heat');
-    }
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 1,
+          max: 3,
+        },
+        step: 0.1,
+      });
+      slider.noUiSlider.set(3);
+      break;
   }
 }
 
-export { effects, getEffect };
+function getSliderUpdate(values, handle, selectedEffectValue) {
+  effectValue.value = slider.noUiSlider.get();
+
+  const value = values[handle];
+  effectValue.value = value;
+
+  switch (selectedEffectValue) {
+    case 'chrome':
+      picturePreview.style.filter = `grayscale(${value})`;
+      break;
+    case 'sepia':
+      picturePreview.style.filter = `sepia(${value})`;
+      break;
+    case 'marvin':
+      picturePreview.style.filter = `invert(${value}%)`;
+      break;
+    case 'phobos':
+      picturePreview.style.filter = `blur(${value}px)`;
+      break;
+    case 'heat':
+      picturePreview.style.filter = `brightness(${value})`;
+      break;
+  }
+}
+
+slider.noUiSlider.off('update');
+slider.noUiSlider.on('update', (values, handle) => {
+  const selectedEffectValue = document.querySelector('input[type="radio"]:checked').value;
+  getSliderUpdate(values, handle, selectedEffectValue);
+});
+
+export { effects, getEffect, updateSliderOptions, picturePreview, slider, getSliderUpdate };

@@ -1,11 +1,15 @@
-import { createdPhotoObjects, renderPhotoList } from './photo-thumbnails';
+import { loadingData, getErrorMessage } from './server-service';
 
 import { renderComments, openFullPhoto, closeFullPhoto } from './full-size-photo';
 
-import { openEditorPicture, closeEditorPicture } from './upload-photo-form';
 
-renderPhotoList();
+import { openEditorPicture, closeEditorPicture,setFormSubmit } from './upload-photo-form';
 
-if (createdPhotoObjects, renderPhotoList,renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture) {
-  //
-}
+import { getEffect, updateSliderOptions, getSliderUpdate } from './editor-photo-slider';
+
+loadingData(getErrorMessage);
+
+
+//if (renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture, getEffect,updateSliderOptions, getSliderUpdate) {
+//
+//}

@@ -1,7 +1,7 @@
-
 import { isEscapeKey } from './random-utils';
 import { validator } from './upload-form-validation';
-import { effects, getEffect } from './editor-photo-slider';
+import { pictureSizeInput } from './editor-photo-scale';
+import { effects, getEffect, picturePreview, slider } from './editor-photo-slider';
 
 const uploadForm = document.querySelector('#upload-select-image');
 const pictureUploadInput = document.querySelector('.img-upload__input');
@@ -10,11 +10,15 @@ const closeEditor = document.querySelector('.img-upload__cancel');
 const uploadFormInputsContainer = document.querySelector('.img-upload__text');
 const uploadFormInputs = uploadFormInputsContainer.querySelectorAll('input, textarea');
 const uploadSubmitButton = document.querySelector('.img-upload__submit');
-if (uploadSubmitButton) {
-  //
-}
 
-const onDocumentKeyDown = function (evt) {
+
+const submitButtonText = {
+  IDLE: 'Сохранить',
+  SENDING: 'Сохраняю...'
+};
+
+
+const onDocumentKeyDownEdit = function (evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     for (const elem of uploadFormInputs) {
@@ -28,16 +32,32 @@ const onDocumentKeyDown = function (evt) {
 };
 
 function openEditorPicture() {
+  picturePreview.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
+  picturePreview.style.filter = '';
   pictureUploadEdit.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeyDown);
+  document.addEventListener('keydown', onDocumentKeyDownEdit);
+  const defaultEffect = 'none';
+  const effectRadio = document.querySelector(`#effect-${defaultEffect}`);
+
+  if (effectRadio) {
+    effectRadio.checked = true;
+    getEffect({ target: effectRadio });
+  }
   effects.addEventListener('change', getEffect);
 }
 
 function closeEditorPicture() {
+  picturePreview.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
+  picturePreview.style.filter = '';
   pictureUploadEdit.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeyDown);
+  document.removeEventListener('keydown', onDocumentKeyDownEdit);
+  pictureUploadInput.value = '';
+  pictureSizeInput.value = '100%';
+  uploadFormInputs.value = '';
+
+  slider.noUiSlider.set(100);
   effects.removeEventListener('change', getEffect);
   uploadForm.reset();
   if (validator) {
@@ -45,16 +65,53 @@ function closeEditorPicture() {
   }
 }
 
-uploadForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
+pictureUploadInput.addEventListener('change', (evt) => {
+  const file = evt.target.files[0];
 
-  const isValid = validator.validate();
-  if (isValid) {
-    uploadForm.submit();
+  if (file) {
+    const imageUrl = URL.createObjectURL(file);
+    picturePreview.src = imageUrl;
   }
+  openEditorPicture();
 });
 
-pictureUploadInput.addEventListener('change', openEditorPicture);
+const blockSubmitButton = () => {
+  uploadSubmitButton.disabled = true;
+  uploadSubmitButton.textContent = submitButtonText.SENDING;
+};
+
+const unblockSubmitButton = () => {
+  uploadSubmitButton.disabled = false;
+  uploadSubmitButton.textContent = submitButtonText.IDLE;
+};
+
+
+const setFormSubmit = (onSuccess, onError) => {
+
+  uploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    const isValid = validator.validate();
+    if (isValid) {
+      blockSubmitButton();
+
+      const formData = new FormData(evt.target);
+      fetch('https://32.javascript.htmlacademy.pro/kekstagram',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      ).then(onSuccess)
+        .then(() => unblockSubmitButton())
+        .catch((err) => {
+          onError(err);
+          
+        });
+
+    }
+  });
+};
+
 closeEditor.addEventListener('click', closeEditorPicture);
 
-export { openEditorPicture, closeEditorPicture };
+export { openEditorPicture, closeEditorPicture, setFormSubmit };

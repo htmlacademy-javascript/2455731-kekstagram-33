@@ -70,8 +70,7 @@ function openFullPhoto(photoData) {
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeyDown);
   document.removeEventListener('keydown', onDocumentKeyEnter);
-
-  bigPictureCommentsLoader.addEventListener('click', loadMoreComments);
+  bigPictureCommentsLoader.addEventListener('click',loadMoreComments);
 }
 
 

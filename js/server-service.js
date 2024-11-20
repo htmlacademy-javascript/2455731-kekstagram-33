@@ -1,7 +1,12 @@
 import { renderPhotoList } from './photo-thumbnails';
-import { isEscapeKey } from './random-utils';
+import { isEscapeKey, isDocumentEvent } from './random-utils';
 import { closeEditorPicture, setFormSubmit } from './upload-photo-form';
 
+const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
+const ROUTE = {
+  GET__DATA: '/data',
+  POST__DATA: '/',
+};
 
 const PICTURES__COUNT = 25;
 
@@ -9,7 +14,8 @@ function showErrorMessage() {
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorMessageEdit = errorMessageTemplate.cloneNode(true);
   document.body.insertAdjacentElement('beforebegin', errorMessageEdit);
-  const errorMessageButton = errorMessageEdit.querySelector('.error__button');
+  const errorMessageButton = document.querySelector('.error__button');
+  console.log(errorMessageButton);
 
   const onDocumentKeyPress = function (evt) {
     if (isEscapeKey(evt)) {
@@ -22,13 +28,13 @@ function showErrorMessage() {
       errorMessageEdit.remove();
     }
   };
-  function closeErrorMessageEdit() {
 
+
+  function closeErrorMessageEdit() {
     errorMessageButton.addEventListener('click', () => {
       errorMessageEdit.remove();
       document.removeEventListener('keydown', onDocumentKeyPress);
       window.removeEventListener('click', onDocumentClick);
-
     });
 
     window.addEventListener('click', onDocumentClick);
@@ -37,40 +43,60 @@ function showErrorMessage() {
   closeErrorMessageEdit();
 }
 
-
 function showSuccessMessage() {
   const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
   const successMessage = successMessageTemplate.cloneNode(true);
+  successMessage.setAttribute('data-id', 'success-message');
   document.body.insertAdjacentElement('beforeend', successMessage);
+  console.log('Сообщение добавлено в DOM');
+  console.log('Количество элементов с классом .success:', document.querySelectorAll('.success').length);
   const successMessageButton = successMessage.querySelector('.success__button');
+
+  successMessageButton.addEventListener('click', () => {
+    console.log('Кнопка закрытия нажата');
+    removeSuccessMessage();
+  });
 
   const onDocumentKeyPress = function (evt) {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
-      successMessage.remove();
+      removeSuccessMessage();
     }
   };
+
   const onDocumentClick = (evt) => {
-    if (!successMessage.contains(evt.target)) {
-      successMessage.remove();
+    if (isDocumentEvent(evt)) {
+      removeSuccessMessage();
     }
+
+
+    //const messageElement = document.querySelector('[data-id="success-message"]');
+    //console.log('Клик зарегистрирован, цель события:', evt.target);
+    //console.log('Удаляем сообщение');
+    //if (messageElement && !messageElement.contains(evt.target)) {
+  // removeSuccessMessage();
+  // }
   };
 
-  function closeSuccesMessage() {
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('keydown', onDocumentKeyPress);
 
-    successMessageButton.addEventListener('click', () => {
-      successMessage.remove();
+
+  function removeSuccessMessage() {
+    const messageElement = document.querySelector('[data-id="success-message"]');
+    console.log('Удаление сообщения, найден элемент:', messageElement);
+    if (messageElement) {
+      console.log('Сообщение удалено, оставшиеся элементы с классом .success:', document.querySelectorAll('.success').length);
+      messageElement.remove();
       document.removeEventListener('keydown', onDocumentKeyPress);
-      window.removeEventListener('click', onDocumentClick);
+      document.removeEventListener('click', onDocumentClick);
+      console.log('Удаляем сообщение и обработчики');
 
-    });
-
-    window.addEventListener('click', onDocumentClick);
-    document.addEventListener('keydown', onDocumentKeyPress);
+    } else {
+      console.log('Элемент не найден для удаления');
+    }
   }
-  closeSuccesMessage();
 }
-
 
 function getErrorMessage() {
   const loadingBigDataErrorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
@@ -82,8 +108,10 @@ function getErrorMessage() {
   }, 5000);
 }
 
-function loadingData (onError) {
-  fetch('https://32.javascript.htmlacademy.pro/kekstagram/data')
+
+function loadingData(url, onError) {
+  fetch(`${BASE__URL}${ROUTE.GET__DATA}`)
+
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -99,13 +127,23 @@ function loadingData (onError) {
     });
 }
 
-setFormSubmit(
-  () => {
-    closeEditorPicture();
-    showSuccessMessage();
-  },
-  () => {
-    showErrorMessage();
-  }
-);
-export { loadingData, getErrorMessage };
+const sendData = (url, body, onSuccess, onError, restoreData) => {
+  fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
+    method: 'POST',
+    body,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status} — ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      onSuccess();
+    })
+    .catch((err) => {
+      onError(err, restoreData);
+    });
+};
+
+export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL};

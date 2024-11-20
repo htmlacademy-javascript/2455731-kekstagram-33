@@ -1,7 +1,9 @@
 import { isEscapeKey } from './random-utils';
 import { validator } from './upload-form-validation';
+import { sendData, ROUTE, BASE__URL } from './server-service';
 import { pictureSizeInput } from './editor-photo-scale';
 import { effects, getEffect, picturePreview, slider } from './editor-photo-slider';
+
 
 const uploadForm = document.querySelector('#upload-select-image');
 const pictureUploadInput = document.querySelector('.img-upload__input');
@@ -59,7 +61,6 @@ function closeEditorPicture() {
 
   slider.noUiSlider.set(100);
   effects.removeEventListener('change', getEffect);
-  //uploadForm.reset();
   if (validator) {
     validator.reset();
   }
@@ -98,32 +99,43 @@ const setFormSubmit = (onSuccess, onError) => {
       const hashtagValue = document.querySelector('.text__hashtags').value;
       const commentValue = document.querySelector('.text__description').value;
       const photoFile = document.querySelector('#upload-file').files[0];
-
       const formData = new FormData(evt.target);
-      fetch('https://32.javascript.htmlacademy.pro/kekstagram',
-        {
+      const restoreData = { hashtagValue, commentValue, photoFile };
+
+      sendData(ROUTE.POST__DATA, formData, () => {
+
+        fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
           method: 'POST',
           body: formData,
-        }
-      ).then(() => {
-        unblockSubmitButton();
-        onSuccess();
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Ошибка: ${response.status} — ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(() => {
+            unblockSubmitButton();
+            onSuccess();
 
-        document.querySelector('.text__hashtags').value = '';
-        document.querySelector('.text__description').value = '';
-        document.querySelector('#upload-file').value = '';
-      })
-        .catch((err) => {
-          unblockSubmitButton();
-          onError(err);
-          document.querySelector('.text__hashtags').value = hashtagValue;
-          document.querySelector('.text__description').value = commentValue;
-          if (photoFile) {
-            const imgPreview = document.querySelector('.img-upload__preview img');
-            const objectURL = URL.createObjectURL(photoFile);
-            imgPreview.src = objectURL;
-          }
-        });
+            document.querySelector('.text__hashtags').value = '';
+            document.querySelector('.text__description').value = '';
+            document.querySelector('#upload-file').value = '';
+          })
+          .catch((err) => {
+            unblockSubmitButton();
+            onError(err, restoreData);
+            document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
+            document.querySelector('.text__description').value = restoreData.commentValue;
+            if (restoreData.photoFile) {
+              const imgPreview = document.querySelector('.img-upload__preview img');
+              const objectURL = URL.createObjectURL(restoreData.photoFile);
+              imgPreview.src = objectURL;
+            }
+          },
+          onError
+          );
+      });
     }
   });
 };

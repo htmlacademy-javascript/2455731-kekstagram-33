@@ -20,6 +20,6 @@ setFormSubmit(
 );
 
 
-//if (renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture, getEffect,updateSliderOptions, getSliderUpdate) {
+if (renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture, getEffect,updateSliderOptions, getSliderUpdate, sendData) {
 //
-//}
+}

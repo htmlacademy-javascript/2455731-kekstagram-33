@@ -1,5 +1,5 @@
 import { isEscapeKey } from './random-utils';
-import { validator } from './upload-form-validation';
+import { validator} from './upload-form-validation';
 import { sendData, ROUTE, BASE__URL } from './server-service';
 import { pictureSizeInput } from './editor-photo-scale';
 import { effects, getEffect, picturePreview, slider } from './editor-photo-slider';

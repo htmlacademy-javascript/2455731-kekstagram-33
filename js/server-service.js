@@ -7,15 +7,14 @@ const ROUTE = {
   GET__DATA: '/data',
   POST__DATA: '/',
 };
-
 const PICTURES__COUNT = 25;
+
 
 function showErrorMessage() {
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorMessageEdit = errorMessageTemplate.cloneNode(true);
   document.body.insertAdjacentElement('beforebegin', errorMessageEdit);
   const errorMessageButton = document.querySelector('.error__button');
-  console.log(errorMessageButton);
 
   const onDocumentKeyPress = function (evt) {
     if (isEscapeKey(evt)) {
@@ -48,12 +47,12 @@ function showSuccessMessage() {
   const successMessage = successMessageTemplate.cloneNode(true);
   successMessage.setAttribute('data-id', 'success-message');
   document.body.insertAdjacentElement('beforeend', successMessage);
-  console.log('Сообщение добавлено в DOM');
-  console.log('Количество элементов с классом .success:', document.querySelectorAll('.success').length);
+  //console.log('Сообщение добавлено в DOM');
+  // console.log('Количество элементов с классом .success:', document.querySelectorAll('.success').length);
   const successMessageButton = successMessage.querySelector('.success__button');
 
   successMessageButton.addEventListener('click', () => {
-    console.log('Кнопка закрытия нажата');
+    //console.log('Кнопка закрытия нажата');
     removeSuccessMessage();
   });
 
@@ -84,16 +83,16 @@ function showSuccessMessage() {
 
   function removeSuccessMessage() {
     const messageElement = document.querySelector('[data-id="success-message"]');
-    console.log('Удаление сообщения, найден элемент:', messageElement);
+    //console.log('Удаление сообщения, найден элемент:', messageElement);
     if (messageElement) {
-      console.log('Сообщение удалено, оставшиеся элементы с классом .success:', document.querySelectorAll('.success').length);
+      //console.log('Сообщение удалено, оставшиеся элементы с классом .success:', document.querySelectorAll('.success').length);
       messageElement.remove();
       document.removeEventListener('keydown', onDocumentKeyPress);
       document.removeEventListener('click', onDocumentClick);
-      console.log('Удаляем сообщение и обработчики');
+      //console.log('Удаляем сообщение и обработчики');
 
     } else {
-      console.log('Элемент не найден для удаления');
+      //console.log('Элемент не найден для удаления');
     }
   }
 }

@@ -21,7 +21,6 @@ function getPictureSmall() {
 
 function getPictureBig() {
 
-
   let inputValue = Number(parseInt(pictureSizeInput.value, 10));
   if (buttonPictureBig) {
     if (inputValue < MAX__VALUE) {

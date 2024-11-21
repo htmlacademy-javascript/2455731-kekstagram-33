@@ -1,4 +1,6 @@
 const uploadForm = document.querySelector('#upload-select-image');
+const uploadFileInput = document.querySelector('#upload-file');
+
 
 const validator = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -9,6 +11,18 @@ const validator = new Pristine(uploadForm, {
 function validateComments(value) {
   return value.length <= 140;
 }
+
+function isPictureFormatValid() {
+  const file = uploadFileInput.files[0];
+  return file ? /\.(jpg|jpeg)$/i.test(file.name) : false;
+}
+
+/*validator.addValidator(uploadFileInput, (file) => {
+  // Проверка на разрешенные расширения
+  const allowedExtensions = /\.(jpg|jpeg)$/i;
+  return file && allowedExtensions.test(file.name); // Если файл не jpg/jpeg, возвращаем false
+}, 'Только изображения формата JPEG допускаются к загрузке');*/
+
 
 validator.addValidator(uploadForm.querySelector('.text__hashtags'), (value) => {
   const hashTagPattern = /^#[a-zа-яё0-9]{1,19}$/i;
@@ -35,7 +49,7 @@ validator.addValidator(uploadForm.querySelector('.text__hashtags'), (value) => {
   return new Set(lowerCasedTags).size === lowerCasedTags.length;
 }, 'Хэштеги не должны повторяться');
 
-
+validator.addValidator(uploadFileInput, isPictureFormatValid, 'Только изображения формата JPEG допускаются к загрузке');
 validator.addValidator(uploadForm.querySelector('.text__description'), validateComments, 'Максимальная длина комментария - 140 символов');
 
-export { validator };
+export { validator};

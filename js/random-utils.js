@@ -41,7 +41,11 @@ function isEscapeKey (evt) {
   return evt.key === 'Escape';
 }
 
+function isDocumentEvent (evt) {
+  return evt.target === document;
+}
+
 function isEnterKey(evt) {
   return evt.key === 'Enter';
 }
-export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath, isEscapeKey, isEnterKey };
+export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath, isEscapeKey, isEnterKey, isDocumentEvent };

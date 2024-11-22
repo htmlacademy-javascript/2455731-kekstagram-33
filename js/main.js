@@ -1,11 +1,16 @@
-import { loadingData, getErrorMessage, showErrorMessage, showSuccessMessage, sendData } from './server-service';
+import { loadingData, getErrorMessage, showErrorMessage, showSuccessMessage} from './server-service';
 
-import { renderComments, openFullPhoto, closeFullPhoto } from './full-size-photo';
+import './full-size-photo';
 
+import './gallery';
 
-import { openEditorPicture, closeEditorPicture,setFormSubmit } from './upload-photo-form';
+import './photo-thumbnails';
 
-import { getEffect, updateSliderOptions, getSliderUpdate } from './editor-photo-slider';
+import { closeEditorPicture,setFormSubmit } from './upload-photo-form';
+
+import './editor-photo-slider';
+
+import './editor-photo-scale';
 
 loadingData(getErrorMessage);
 
@@ -18,8 +23,3 @@ setFormSubmit(
     showErrorMessage();
   }
 );
-
-
-if (renderComments, openFullPhoto, closeFullPhoto, openEditorPicture, closeEditorPicture, getEffect,updateSliderOptions, getSliderUpdate, sendData) {
-//
-}

@@ -1,6 +1,5 @@
 import { renderPhotoList } from './photo-thumbnails';
 import { isEscapeKey, isDocumentEvent } from './random-utils';
-import { closeEditorPicture, setFormSubmit } from './upload-photo-form';
 
 const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 const ROUTE = {
@@ -8,7 +7,8 @@ const ROUTE = {
   POST__DATA: '/',
 };
 const PICTURES__COUNT = 25;
-
+const pictureFilter = document.querySelector('.img-filters');
+let loadedPictures = [];
 
 function showErrorMessage() {
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
@@ -52,7 +52,6 @@ function showSuccessMessage() {
   const successMessageButton = successMessage.querySelector('.success__button');
 
   successMessageButton.addEventListener('click', () => {
-    //console.log('Кнопка закрытия нажата');
     removeSuccessMessage();
   });
 
@@ -119,7 +118,10 @@ function loadingData(url, onError) {
     })
 
     .then((pictures) => {
-      renderPhotoList(pictures.slice(0, PICTURES__COUNT));
+      pictureFilter.classList.remove('img-filters--inactive');
+      loadedPictures = pictures.slice(0, PICTURES__COUNT);
+      //console.log('Загруженные фотографии:', loadedPictures);
+      renderPhotoList(loadedPictures);
     })
     .catch((err) => {
       onError(err);
@@ -145,4 +147,4 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
     });
 };
 
-export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL};
+export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures};

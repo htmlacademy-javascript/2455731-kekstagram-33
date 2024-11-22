@@ -17,12 +17,6 @@ function isPictureFormatValid() {
   return file ? /\.(jpg|jpeg)$/i.test(file.name) : false;
 }
 
-/*validator.addValidator(uploadFileInput, (file) => {
-  // Проверка на разрешенные расширения
-  const allowedExtensions = /\.(jpg|jpeg)$/i;
-  return file && allowedExtensions.test(file.name); // Если файл не jpg/jpeg, возвращаем false
-}, 'Только изображения формата JPEG допускаются к загрузке');*/
-
 
 validator.addValidator(uploadForm.querySelector('.text__hashtags'), (value) => {
   const hashTagPattern = /^#[a-zа-яё0-9]{1,19}$/i;

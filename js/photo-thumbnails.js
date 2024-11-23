@@ -1,10 +1,8 @@
-
 import { loadedPictures } from './server-service';
 import { openFullPhoto } from './full-size-photo';
 import { photoList } from './gallery';
-import { getRandomArrayElem } from './random-utils';
+import { getRandomArrayElem, debounce } from './random-utils';
 
-//const photoList = document.querySelector('.pictures');
 const templateContent = document.querySelector('#picture').content.querySelector('a');
 const buttonFilterDefault = document.querySelector('#filter-default');
 const buttonFilterRandom = document.querySelector('#filter-random');
@@ -12,8 +10,7 @@ const buttonFilterDiscussed = document.querySelector('#filter-discussed');
 
 
 const renderPhotoList = (createdPhotoObjects) => {
-  //photoList.innerHTML = '';
-  //console.log('Фото для отображения:', createdPhotoObjects);
+
   const fragment = document.createDocumentFragment();
 
   createdPhotoObjects.forEach((element) => {
@@ -27,7 +24,7 @@ const renderPhotoList = (createdPhotoObjects) => {
     photoItem.addEventListener('click', () => {
       openFullPhoto(element);
     });
-    fragment.append(photoItem);
+    fragment.appendChild(photoItem);
   });
   photoList.append(fragment);
 };
@@ -37,7 +34,13 @@ buttonFilterDefault.addEventListener('click', () => {
   buttonFilterDiscussed.classList.remove('img-filters__button--active');
   buttonFilterDefault.classList.add('img-filters__button--active');
 
-  renderPhotoList(loadedPictures);
+  const uploadInput = document.querySelector('#upload-select-image');
+  const picturesContainer = document.querySelector('.pictures');
+  if (picturesContainer) {
+    const pictures = picturesContainer.querySelectorAll('.picture');
+    pictures.forEach((picture) => picture.remove());
+  }
+  debounce(() => renderPhotoList(loadedPictures))();
 });
 
 buttonFilterRandom.addEventListener('click', () => {
@@ -45,35 +48,49 @@ buttonFilterRandom.addEventListener('click', () => {
   buttonFilterDefault.classList.remove('img-filters__button--active');
   buttonFilterRandom.classList.add('img-filters__button--active');
 
-  const randomPictures = [];
-  const randomPicturesEdit = loadedPictures.slice();
-  const randomMaxIteration = 25;
-  let i = 0;
-
-  while (randomPictures.length < 10 && i < randomMaxIteration) {
-    i++;
-
-    const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
-
-    if (!randomPictures.includes(randomPicturesResult)) {
-      randomPictures.push(randomPicturesResult);
-    }
+  const uploadInput = document.querySelector('#upload-select-image');
+  const picturesContainer = document.querySelector('.pictures');
+  if (picturesContainer) {
+    const pictures = picturesContainer.querySelectorAll('.picture');
+    pictures.forEach((picture) => picture.remove());
   }
+  debounce(() => {
+    const randomPictures = [];
+    const randomPicturesEdit = loadedPictures.slice();
+    const randomMaxIteration = 25;
+    let i = 0;
 
-  renderPhotoList(randomPictures);
+    while (randomPictures.length < 10 && i < randomMaxIteration) {
+      i++;
+
+      const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
+
+      if (!randomPictures.includes(randomPicturesResult)) {
+        randomPictures.push(randomPicturesResult);
+      }
+    }
+    renderPhotoList(randomPictures);
+  })();
 });
 
 buttonFilterDiscussed.addEventListener('click', () => {
   buttonFilterDefault.classList.remove('img-filters__button--active');
   buttonFilterRandom.classList.remove('img-filters__button--active');
   buttonFilterDiscussed.classList.add('img-filters__button--active');
+  const uploadInput = document.querySelector('#upload-select-image');
 
-  const bestCommentsCount = loadedPictures.slice();
-  //console.log('До сортировки:', bestCommentsCount);
-  const bestCommentsSorted = bestCommentsCount.sort((a, b) => b.comments.length - a.comments.length);
-  //console.log('После сортировки:', bestCommentsSorted);
+  const picturesContainer = document.querySelector('.pictures');
+  if (picturesContainer) {
+    const pictures = picturesContainer.querySelectorAll('.picture');
+    pictures.forEach((picture) => picture.remove());
+  }
 
-  renderPhotoList(bestCommentsSorted);
+
+  debounce(() => {
+    const bestCommentsCount = loadedPictures.slice();
+    const bestCommentsSorted = bestCommentsCount.sort((a, b) => b.comments.length - a.comments.length);
+    renderPhotoList(bestCommentsSorted);
+  })();
 });
 
 export { renderPhotoList };

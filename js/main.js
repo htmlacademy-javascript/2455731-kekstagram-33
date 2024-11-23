@@ -6,7 +6,7 @@ import './gallery';
 
 import './photo-thumbnails';
 
-import { closeEditorPicture,setFormSubmit } from './upload-photo-form';
+import { closeEditorPicture, setFormSubmit } from './upload-photo-form';
 
 import './editor-photo-slider';
 

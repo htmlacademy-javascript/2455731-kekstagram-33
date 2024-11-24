@@ -8,6 +8,10 @@ const buttonFilterDefault = document.querySelector('#filter-default');
 const buttonFilterRandom = document.querySelector('#filter-random');
 const buttonFilterDiscussed = document.querySelector('#filter-discussed');
 
+function getUploadInput() {
+  return document.querySelector('#upload-select-image');
+}
+
 
 const renderPhotoList = (createdPhotoObjects) => {
 
@@ -34,7 +38,11 @@ buttonFilterDefault.addEventListener('click', () => {
   buttonFilterDiscussed.classList.remove('img-filters__button--active');
   buttonFilterDefault.classList.add('img-filters__button--active');
 
-  const uploadInput = document.querySelector('#upload-select-image');
+  const uploadInput = getUploadInput();
+  if (uploadInput) {
+    void uploadInput;
+  }
+
   const picturesContainer = document.querySelector('.pictures');
   if (picturesContainer) {
     const pictures = picturesContainer.querySelectorAll('.picture');
@@ -48,7 +56,11 @@ buttonFilterRandom.addEventListener('click', () => {
   buttonFilterDefault.classList.remove('img-filters__button--active');
   buttonFilterRandom.classList.add('img-filters__button--active');
 
-  const uploadInput = document.querySelector('#upload-select-image');
+  const uploadInput = getUploadInput();
+  if (uploadInput) {
+    void uploadInput;
+  }
+
   const picturesContainer = document.querySelector('.pictures');
   if (picturesContainer) {
     const pictures = picturesContainer.querySelectorAll('.picture');
@@ -77,7 +89,11 @@ buttonFilterDiscussed.addEventListener('click', () => {
   buttonFilterDefault.classList.remove('img-filters__button--active');
   buttonFilterRandom.classList.remove('img-filters__button--active');
   buttonFilterDiscussed.classList.add('img-filters__button--active');
-  const uploadInput = document.querySelector('#upload-select-image');
+
+  const uploadInput = getUploadInput();
+  if (uploadInput) {
+    void uploadInput;
+  }
 
   const picturesContainer = document.querySelector('.pictures');
   if (picturesContainer) {

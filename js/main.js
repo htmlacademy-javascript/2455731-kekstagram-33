@@ -1,4 +1,4 @@
-import { loadingData, getErrorMessage, showErrorMessage, showSuccessMessage} from './server-service';
+import { loadingData, getErrorMessage, showErrorMessage, showSuccessMessage } from './server-service';
 
 import './full-size-photo';
 
@@ -12,7 +12,7 @@ import './editor-photo-slider';
 
 import './editor-photo-scale';
 
-loadingData(getErrorMessage);
+loadingData('https://32.javascript.htmlacademy.pro/kekstagram/data', getErrorMessage);
 
 setFormSubmit(
   () => {

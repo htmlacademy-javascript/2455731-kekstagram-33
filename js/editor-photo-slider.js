@@ -107,8 +107,13 @@ function updateSliderOptions(selectedEffectValue) {
 function getSliderUpdate(values, handle, selectedEffectValue) {
   effectValue.value = slider.noUiSlider.get();
 
-  const value = values[handle];
-  effectValue.value = value;
+  const value = parseFloat(values[handle]);
+
+  if (Number.isInteger(value)) {
+    effectValue.value = value.toString();
+  } else {
+    effectValue.value = value.toFixed(1);
+  }
 
   switch (selectedEffectValue) {
     case 'chrome':

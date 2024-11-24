@@ -53,7 +53,6 @@ function showSuccessMessage() {
   document.body.insertAdjacentElement('beforeend', successMessage);
   const successMessageButton = successMessage.querySelector('.success__button');
 
-
   successMessageButton.addEventListener('click', (evt) => {
     evt.stopPropagation();
     removeSuccessMessage();
@@ -87,15 +86,21 @@ function showSuccessMessage() {
   }
 }
 
-function getErrorMessage() {
+function getErrorMessage(error) {
+
   const loadingBigDataErrorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
   const errorMessage = loadingBigDataErrorTemplate.cloneNode(true);
+
+  errorMessage.textContent = error ? `Ошибка: ${error.message || error}` : 'Ошибка: не определена';
+
   document.body.insertAdjacentElement('beforeend', errorMessage);
+
 
   setTimeout(() => {
     errorMessage.remove();
   }, 5000);
 }
+
 
 function loadingData(url, onError) {
   fetch(`${BASE__URL}${ROUTE.GET__DATA}`)
@@ -118,6 +123,10 @@ function loadingData(url, onError) {
     });
 }
 
+const testError = new Error('Тестовая ошибка');
+getErrorMessage(testError);
+
+
 const sendData = (url, body, onSuccess, onError, restoreData) => {
   fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
     method: 'POST',
@@ -133,8 +142,10 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
       onSuccess();
     })
     .catch((err) => {
-      onError(err, restoreData);
+      if (typeof onError === 'function') {
+        onError(err, restoreData);
+      }
     });
 };
 
-export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures};
+export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures };

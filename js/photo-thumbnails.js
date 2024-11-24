@@ -13,7 +13,7 @@ function getUploadInput() {
 }
 
 
-const renderPhotoList = (createdPhotoObjects) => {
+/*const renderPhotoList = (createdPhotoObjects) => {
 
   const fragment = document.createDocumentFragment();
 
@@ -33,6 +33,33 @@ const renderPhotoList = (createdPhotoObjects) => {
   photoList.append(fragment);
 };
 
+const debouncedRenderPhotoList = debounce((photoObjects) => {
+  console.log('Render вызван в', Date.now());
+  clearPicturesContainer();
+  renderPhotoList(photoObjects);
+}, 500);
+
+function clearPicturesContainer () {
+  const picturesContainer = document.querySelector('.pictures');
+  if (picturesContainer) {
+    const pictures = picturesContainer.querySelectorAll('.picture');
+    pictures.forEach((picture) => picture.remove());
+  }
+}
+
+const handleFilterClick = (filterFunction) => {
+  clearPicturesContainer();
+
+  const filteredPictures = filterFunction();
+  debouncedRenderPhotoList(filteredPictures);
+  console.log('Фильтр применён, количество картинок:', filteredPictures.length);
+};
+
+function getDefaultPictures() {
+  return loadedPictures && loadedPictures.length > 0 ? loadedPictures : [];
+  //return loadedPictures; // Возвращаем все картинки без изменений
+}
+
 buttonFilterDefault.addEventListener('click', () => {
   buttonFilterRandom.classList.remove('img-filters__button--active');
   buttonFilterDiscussed.classList.remove('img-filters__button--active');
@@ -43,12 +70,8 @@ buttonFilterDefault.addEventListener('click', () => {
     void uploadInput;
   }
 
-  const picturesContainer = document.querySelector('.pictures');
-  if (picturesContainer) {
-    const pictures = picturesContainer.querySelectorAll('.picture');
-    pictures.forEach((picture) => picture.remove());
-  }
-  debounce(() => renderPhotoList(loadedPictures))();
+  const defaultPictures = getDefaultPictures();
+  debouncedRenderPhotoList(defaultPictures);
 });
 
 buttonFilterRandom.addEventListener('click', () => {
@@ -61,29 +84,24 @@ buttonFilterRandom.addEventListener('click', () => {
     void uploadInput;
   }
 
-  const picturesContainer = document.querySelector('.pictures');
-  if (picturesContainer) {
-    const pictures = picturesContainer.querySelectorAll('.picture');
-    pictures.forEach((picture) => picture.remove());
-  }
-  debounce(() => {
-    const randomPictures = [];
-    const randomPicturesEdit = loadedPictures.slice();
-    const randomMaxIteration = 25;
-    let i = 0;
 
-    while (randomPictures.length < 10 && i < randomMaxIteration) {
-      i++;
+  const randomPictures = [];
+  const randomPicturesEdit = loadedPictures.slice();
+  const randomMaxIteration = 25;
+  let i = 0;
 
-      const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
+  while (randomPictures.length < 10 && i < randomMaxIteration) {
+    i++;
 
-      if (!randomPictures.includes(randomPicturesResult)) {
-        randomPictures.push(randomPicturesResult);
-      }
+    const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
+
+    if (!randomPictures.includes(randomPicturesResult)) {
+      randomPictures.push(randomPicturesResult);
     }
-    renderPhotoList(randomPictures);
-  })();
+  }
+  debouncedRenderPhotoList(randomPictures);
 });
+
 
 buttonFilterDiscussed.addEventListener('click', () => {
   buttonFilterDefault.classList.remove('img-filters__button--active');
@@ -95,18 +113,112 @@ buttonFilterDiscussed.addEventListener('click', () => {
     void uploadInput;
   }
 
+
+  const bestCommentsCount = loadedPictures.slice();
+  const bestCommentsSorted = bestCommentsCount.sort((a, b) => b.comments.length - a.comments.length);
+  debouncedRenderPhotoList(bestCommentsSorted);
+});
+
+export { renderPhotoList };*/
+const renderPhotoList = (createdPhotoObjects) => {
+  const fragment = document.createDocumentFragment();
+
+  createdPhotoObjects.forEach((element) => {
+    const photoItem = templateContent.cloneNode(true);
+    photoItem.dataset.id = element.id;
+    photoItem.querySelector('.picture__img').src = element.url;
+    photoItem.querySelector('.picture__img').alt = element.description;
+    photoItem.querySelector('.picture__likes').textContent = element.likes;
+    photoItem.querySelector('.picture__comments').textContent = element.comments.length;
+
+    photoItem.addEventListener('click', () => {
+      openFullPhoto(element);
+    });
+    fragment.appendChild(photoItem);
+  });
+
+  photoList.append(fragment);
+};
+
+// Дебаунс-функция для рендеринга списка
+const debouncedRenderPhotoList = debounce((photoObjects) => {
+  console.log('Render вызван в', Date.now());
+  clearPicturesContainer();
+  renderPhotoList(photoObjects);
+}, 500);
+
+// Функция для очистки контейнера с картинками
+function clearPicturesContainer() {
   const picturesContainer = document.querySelector('.pictures');
   if (picturesContainer) {
     const pictures = picturesContainer.querySelectorAll('.picture');
     pictures.forEach((picture) => picture.remove());
   }
+}
 
+// Функция для получения картинок по умолчанию
+function getDefaultPictures() {
+  return loadedPictures && loadedPictures.length > 0 ? loadedPictures : [];
+}
 
-  debounce(() => {
-    const bestCommentsCount = loadedPictures.slice();
-    const bestCommentsSorted = bestCommentsCount.sort((a, b) => b.comments.length - a.comments.length);
-    renderPhotoList(bestCommentsSorted);
-  })();
+// Функция для случайного фильтра
+function getRandomPictures() {
+  const randomPictures = [];
+  const randomPicturesEdit = loadedPictures.slice();
+  const randomMaxIteration = 25;
+  let i = 0;
+
+  while (randomPictures.length < 10 && i < randomMaxIteration) {
+    i++;
+    const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
+
+    if (!randomPictures.includes(randomPicturesResult)) {
+      randomPictures.push(randomPicturesResult);
+    }
+  }
+
+  return randomPictures;
+}
+
+// Функция для фильтра обсуждаемых картинок
+function getBestCommentsPictures() {
+  return loadedPictures.slice().sort((a, b) => b.comments.length - a.comments.length);
+}
+
+// Универсальная функция для обработки клика по фильтру
+const handleFilterClick = (filterFunction) => {
+  const filteredPictures = filterFunction();
+  if (filteredPictures && filteredPictures.length > 0) {
+    console.log('Фильтр применён, количество картинок:', filteredPictures.length);
+    debouncedRenderPhotoList(filteredPictures);
+  } else {
+    console.warn('Нет картинок для отображения после фильтрации');
+  }
+};
+
+// Обработчики событий для кнопок фильтров
+buttonFilterDefault.addEventListener('click', () => {
+  buttonFilterRandom.classList.remove('img-filters__button--active');
+  buttonFilterDiscussed.classList.remove('img-filters__button--active');
+  buttonFilterDefault.classList.add('img-filters__button--active');
+
+  handleFilterClick(getDefaultPictures);
+});
+
+buttonFilterRandom.addEventListener('click', () => {
+  buttonFilterDiscussed.classList.remove('img-filters__button--active');
+  buttonFilterDefault.classList.remove('img-filters__button--active');
+  buttonFilterRandom.classList.add('img-filters__button--active');
+
+  handleFilterClick(getRandomPictures);
+});
+
+buttonFilterDiscussed.addEventListener('click', () => {
+  buttonFilterDefault.classList.remove('img-filters__button--active');
+  buttonFilterRandom.classList.remove('img-filters__button--active');
+  buttonFilterDiscussed.classList.add('img-filters__button--active');
+
+  handleFilterClick(getBestCommentsPictures);
 });
 
 export { renderPhotoList };

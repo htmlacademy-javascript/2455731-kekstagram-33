@@ -50,9 +50,9 @@ function openEditorPicture() {
 }
 
 function closeEditorPicture() {
+  pictureUploadEdit.classList.add('hidden');
   picturePreview.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
   picturePreview.style.filter = '';
-  pictureUploadEdit.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeyDownEdit);
   pictureUploadInput.value = '';
@@ -96,6 +96,7 @@ const setFormSubmit = (onSuccess, onError) => {
     if (isValid) {
       blockSubmitButton();
 
+
       const hashtagValue = document.querySelector('.text__hashtags').value;
       const commentValue = document.querySelector('.text__description').value;
       const photoFile = document.querySelector('#upload-file').files[0];
@@ -116,6 +117,7 @@ const setFormSubmit = (onSuccess, onError) => {
           })
           .then(() => {
             unblockSubmitButton();
+
             onSuccess();
 
             document.querySelector('.text__hashtags').value = '';

@@ -1,5 +1,6 @@
 import { renderPhotoList } from './photo-thumbnails';
-import { isEscapeKey} from './random-utils';
+import { isEscapeKey } from './random-utils';
+import { clearErrors } from './upload-photo-form';
 
 const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 const ROUTE = {
@@ -140,6 +141,7 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
     })
     .then(() => {
       onSuccess();
+      clearErrors();
     })
     .catch((err) => {
       if (typeof onError === 'function') {

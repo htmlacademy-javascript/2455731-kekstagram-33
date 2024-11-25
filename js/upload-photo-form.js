@@ -2,7 +2,7 @@ import { isEscapeKey } from './random-utils';
 import { validator} from './upload-form-validation';
 import { sendData, ROUTE, BASE__URL } from './server-service';
 import { pictureSizeInput } from './editor-photo-scale';
-import { effects, getEffect, picturePreview, slider } from './editor-photo-slider';
+import { effects, getEffect, picturePreview, slider} from './editor-photo-slider';
 
 
 const uploadForm = document.querySelector('#upload-select-image');
@@ -41,7 +41,9 @@ function openEditorPicture() {
   document.addEventListener('keydown', onDocumentKeyDownEdit);
   const defaultEffect = 'none';
   const effectRadio = document.querySelector(`#effect-${defaultEffect}`);
-
+  //if (!picturePreview.src || picturePreview.src.includes('upload-default-image.jpg')) {
+  // picturePreview.src = 'img/upload-default-image.jpg';
+  //}
   if (effectRadio) {
     effectRadio.checked = true;
     getEffect({ target: effectRadio });
@@ -77,15 +79,37 @@ pictureUploadInput.addEventListener('change', (evt) => {
 });
 
 const blockSubmitButton = () => {
+  //console.log('Blocking submit button');
   uploadSubmitButton.disabled = true;
   uploadSubmitButton.textContent = submitButtonText.SENDING;
 };
 
 const unblockSubmitButton = () => {
+  //console.log('Unblocking submit button');
   uploadSubmitButton.disabled = false;
   uploadSubmitButton.textContent = submitButtonText.IDLE;
 };
 
+const unblockFormElements = () => {
+  const formElements = document.querySelectorAll('input, textarea');
+  formElements.forEach((element) => {
+    element.disabled = false;
+  });
+};
+
+/*const blockFormElements = () => {
+  const formElements = document.querySelectorAll('input, textarea');
+  formElements.forEach((element) => {
+    element.disabled = true;
+  });
+};*/
+
+function clearErrors() {
+  document.querySelectorAll('.pristine-error').forEach((err) => err.parentNode.removeChild(err));
+  document.querySelectorAll('.img-upload__field-wrapper--error').forEach((wrapper) => {
+    wrapper.classList.remove('img-upload__field-wrapper--error');
+  });
+}
 
 const setFormSubmit = (onSuccess, onError) => {
 
@@ -103,9 +127,13 @@ const setFormSubmit = (onSuccess, onError) => {
       const formData = new FormData(evt.target);
       const restoreData = { hashtagValue, commentValue, photoFile };
 
+      //formData.append('scale', currentScaleValue);
+      //formData.append('effect', selectedEffectValue);
+
       sendData(ROUTE.POST__DATA, formData, () => {
 
         fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
+
           method: 'POST',
           body: formData,
         })
@@ -116,19 +144,26 @@ const setFormSubmit = (onSuccess, onError) => {
             return response.json();
           })
           .then(() => {
-            unblockSubmitButton();
-
-            onSuccess();
 
             document.querySelector('.text__hashtags').value = '';
             document.querySelector('.text__description').value = '';
             document.querySelector('#upload-file').value = '';
+            uploadForm.reset();
+
+            unblockSubmitButton();
+            unblockFormElements();
+            onSuccess();
+            clearErrors();
+
+
           })
           .catch((err) => {
-            unblockSubmitButton();
-            onError(err, restoreData);
             document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
             document.querySelector('.text__description').value = restoreData.commentValue;
+            unblockSubmitButton();
+            unblockFormElements();
+            onError(err, restoreData);
+
             if (restoreData.photoFile) {
               const imgPreview = document.querySelector('.img-upload__preview img');
               const objectURL = URL.createObjectURL(restoreData.photoFile);
@@ -144,4 +179,4 @@ const setFormSubmit = (onSuccess, onError) => {
 
 closeEditor.addEventListener('click', closeEditorPicture);
 
-export { openEditorPicture, closeEditorPicture, setFormSubmit };
+export { openEditorPicture, closeEditorPicture, setFormSubmit, clearErrors };

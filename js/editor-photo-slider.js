@@ -140,4 +140,4 @@ slider.noUiSlider.on('update', (values, handle) => {
   getSliderUpdate(values, handle, selectedEffectValue);
 });
 
-export { effects, getEffect, updateSliderOptions, picturePreview, slider, getSliderUpdate };
+export { effects, getEffect, updateSliderOptions, picturePreview, slider, getSliderUpdate};

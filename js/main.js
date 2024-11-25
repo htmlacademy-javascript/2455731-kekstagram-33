@@ -6,7 +6,10 @@ import './gallery';
 
 import './photo-thumbnails';
 
+import './upload-form-validation';
+
 import { closeEditorPicture, setFormSubmit } from './upload-photo-form';
+
 
 import './editor-photo-slider';
 

@@ -21,6 +21,7 @@ function getPictureSmall() {
   }
 }
 
+
 function getPictureBig() {
 
   let inputValue = Number(parseInt(pictureSizeInput.value, 10));

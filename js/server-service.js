@@ -1,5 +1,6 @@
 import { renderPhotoList } from './photo-thumbnails';
-import { isEscapeKey, isDocumentEvent } from './random-utils';
+import { isEscapeKey } from './random-utils';
+import { clearErrors } from './upload-photo-form';
 
 const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 const ROUTE = {
@@ -9,6 +10,7 @@ const ROUTE = {
 const PICTURES__COUNT = 25;
 const pictureFilter = document.querySelector('.img-filters');
 let loadedPictures = [];
+
 
 function showErrorMessage() {
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
@@ -22,8 +24,10 @@ function showErrorMessage() {
       errorMessageEdit.remove();
     }
   };
+
+
   const onDocumentClick = (evt) => {
-    if (!errorMessageEdit.contains(evt.target)) {
+    if (errorMessageEdit.contains(evt.target)) {
       errorMessageEdit.remove();
     }
   };
@@ -33,10 +37,10 @@ function showErrorMessage() {
     errorMessageButton.addEventListener('click', () => {
       errorMessageEdit.remove();
       document.removeEventListener('keydown', onDocumentKeyPress);
-      window.removeEventListener('click', onDocumentClick);
+      document.removeEventListener('click', onDocumentClick);
     });
 
-    window.addEventListener('click', onDocumentClick);
+    document.addEventListener('click', onDocumentClick);
     document.addEventListener('keydown', onDocumentKeyPress);
   }
   closeErrorMessageEdit();
@@ -47,11 +51,10 @@ function showSuccessMessage() {
   const successMessage = successMessageTemplate.cloneNode(true);
   successMessage.setAttribute('data-id', 'success-message');
   document.body.insertAdjacentElement('beforeend', successMessage);
-  //console.log('Сообщение добавлено в DOM');
-  // console.log('Количество элементов с классом .success:', document.querySelectorAll('.success').length);
   const successMessageButton = successMessage.querySelector('.success__button');
 
-  successMessageButton.addEventListener('click', () => {
+  successMessageButton.addEventListener('click', (evt) => {
+    evt.stopPropagation();
     removeSuccessMessage();
   });
 
@@ -62,44 +65,36 @@ function showSuccessMessage() {
     }
   };
 
-  const onDocumentClick = (evt) => {
-    if (isDocumentEvent(evt)) {
+  const onDocumentClick = function (evt) {
+    const messageElement = document.querySelector('[data-id="success-message"]');
+    if (messageElement.contains(evt.target)) {
       removeSuccessMessage();
     }
-
-
-    //const messageElement = document.querySelector('[data-id="success-message"]');
-    //console.log('Клик зарегистрирован, цель события:', evt.target);
-    //console.log('Удаляем сообщение');
-    //if (messageElement && !messageElement.contains(evt.target)) {
-  // removeSuccessMessage();
-  // }
   };
 
   document.addEventListener('click', onDocumentClick);
   document.addEventListener('keydown', onDocumentKeyPress);
 
-
   function removeSuccessMessage() {
     const messageElement = document.querySelector('[data-id="success-message"]');
-    //console.log('Удаление сообщения, найден элемент:', messageElement);
     if (messageElement) {
-      //console.log('Сообщение удалено, оставшиеся элементы с классом .success:', document.querySelectorAll('.success').length);
       messageElement.remove();
+
       document.removeEventListener('keydown', onDocumentKeyPress);
       document.removeEventListener('click', onDocumentClick);
-      //console.log('Удаляем сообщение и обработчики');
-
-    } else {
-      //console.log('Элемент не найден для удаления');
     }
   }
 }
 
-function getErrorMessage() {
+function getErrorMessage(error) {
+
   const loadingBigDataErrorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
   const errorMessage = loadingBigDataErrorTemplate.cloneNode(true);
+
+  errorMessage.textContent = error ? `Ошибка: ${error.message || error}` : 'Ошибка: не определена';
+
   document.body.insertAdjacentElement('beforeend', errorMessage);
+
 
   setTimeout(() => {
     errorMessage.remove();
@@ -118,15 +113,19 @@ function loadingData(url, onError) {
     })
 
     .then((pictures) => {
+
       pictureFilter.classList.remove('img-filters--inactive');
       loadedPictures = pictures.slice(0, PICTURES__COUNT);
-      //console.log('Загруженные фотографии:', loadedPictures);
       renderPhotoList(loadedPictures);
     })
     .catch((err) => {
       onError(err);
     });
 }
+
+const testError = new Error('Тестовая ошибка');
+getErrorMessage(testError);
+
 
 const sendData = (url, body, onSuccess, onError, restoreData) => {
   fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
@@ -141,10 +140,13 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
     })
     .then(() => {
       onSuccess();
+      clearErrors();
     })
     .catch((err) => {
-      onError(err, restoreData);
+      if (typeof onError === 'function') {
+        onError(err, restoreData);
+      }
     });
 };
 
-export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures};
+export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures };

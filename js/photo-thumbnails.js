@@ -1,19 +1,19 @@
-
 import { loadedPictures } from './server-service';
 import { openFullPhoto } from './full-size-photo';
 import { photoList } from './gallery';
-import { getRandomArrayElem } from './random-utils';
+import { getRandomArrayElem, debounce } from './random-utils';
 
-//const photoList = document.querySelector('.pictures');
 const templateContent = document.querySelector('#picture').content.querySelector('a');
 const buttonFilterDefault = document.querySelector('#filter-default');
 const buttonFilterRandom = document.querySelector('#filter-random');
 const buttonFilterDiscussed = document.querySelector('#filter-discussed');
 
+//function getUploadInput() {
+// return document.querySelector('#upload-select-image');
+//}
+
 
 const renderPhotoList = (createdPhotoObjects) => {
-  //photoList.innerHTML = '';
-  //console.log('Фото для отображения:', createdPhotoObjects);
   const fragment = document.createDocumentFragment();
 
   createdPhotoObjects.forEach((element) => {
@@ -27,24 +27,33 @@ const renderPhotoList = (createdPhotoObjects) => {
     photoItem.addEventListener('click', () => {
       openFullPhoto(element);
     });
-    fragment.append(photoItem);
+    fragment.appendChild(photoItem);
   });
+
   photoList.append(fragment);
 };
 
-buttonFilterDefault.addEventListener('click', () => {
-  buttonFilterRandom.classList.remove('img-filters__button--active');
-  buttonFilterDiscussed.classList.remove('img-filters__button--active');
-  buttonFilterDefault.classList.add('img-filters__button--active');
 
-  renderPhotoList(loadedPictures);
-});
+const debouncedRenderPhotoList = debounce((photoObjects) => {
+  clearPicturesContainer();
+  renderPhotoList(photoObjects);
+}, 500);
 
-buttonFilterRandom.addEventListener('click', () => {
-  buttonFilterDiscussed.classList.remove('img-filters__button--active');
-  buttonFilterDefault.classList.remove('img-filters__button--active');
-  buttonFilterRandom.classList.add('img-filters__button--active');
 
+function clearPicturesContainer() {
+  const picturesContainer = document.querySelector('.pictures');
+  if (picturesContainer) {
+    const pictures = picturesContainer.querySelectorAll('.picture');
+    pictures.forEach((picture) => picture.remove());
+  }
+}
+
+function getDefaultPictures() {
+  return loadedPictures && loadedPictures.length > 0 ? loadedPictures : [];
+}
+
+
+function getRandomPictures() {
   const randomPictures = [];
   const randomPicturesEdit = loadedPictures.slice();
   const randomMaxIteration = 25;
@@ -52,7 +61,6 @@ buttonFilterRandom.addEventListener('click', () => {
 
   while (randomPictures.length < 10 && i < randomMaxIteration) {
     i++;
-
     const randomPicturesResult = getRandomArrayElem(randomPicturesEdit);
 
     if (!randomPictures.includes(randomPicturesResult)) {
@@ -60,7 +68,34 @@ buttonFilterRandom.addEventListener('click', () => {
     }
   }
 
-  renderPhotoList(randomPictures);
+  return randomPictures;
+}
+
+function getBestCommentsPictures() {
+  return loadedPictures.slice().sort((a, b) => b.comments.length - a.comments.length);
+}
+
+const handleFilterClick = (filterFunction) => {
+  const filteredPictures = filterFunction();
+  if (filteredPictures && filteredPictures.length > 0) {
+    debouncedRenderPhotoList(filteredPictures);
+  }
+};
+
+buttonFilterDefault.addEventListener('click', () => {
+  buttonFilterRandom.classList.remove('img-filters__button--active');
+  buttonFilterDiscussed.classList.remove('img-filters__button--active');
+  buttonFilterDefault.classList.add('img-filters__button--active');
+
+  handleFilterClick(getDefaultPictures);
+});
+
+buttonFilterRandom.addEventListener('click', () => {
+  buttonFilterDiscussed.classList.remove('img-filters__button--active');
+  buttonFilterDefault.classList.remove('img-filters__button--active');
+  buttonFilterRandom.classList.add('img-filters__button--active');
+
+  handleFilterClick(getRandomPictures);
 });
 
 buttonFilterDiscussed.addEventListener('click', () => {
@@ -68,12 +103,7 @@ buttonFilterDiscussed.addEventListener('click', () => {
   buttonFilterRandom.classList.remove('img-filters__button--active');
   buttonFilterDiscussed.classList.add('img-filters__button--active');
 
-  const bestCommentsCount = loadedPictures.slice();
-  //console.log('До сортировки:', bestCommentsCount);
-  const bestCommentsSorted = bestCommentsCount.sort((a, b) => b.comments.length - a.comments.length);
-  //console.log('После сортировки:', bestCommentsSorted);
-
-  renderPhotoList(bestCommentsSorted);
+  handleFilterClick(getBestCommentsPictures);
 });
 
 export { renderPhotoList };

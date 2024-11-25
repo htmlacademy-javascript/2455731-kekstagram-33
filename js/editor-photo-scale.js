@@ -5,6 +5,7 @@ const picturePreview = document.querySelector('.img-upload__preview img');
 
 const MIN__VALUE = 25;
 const MAX__VALUE = 100;
+let currentScaleValue = MAX__VALUE;
 
 function getPictureSmall() {
 
@@ -15,9 +16,11 @@ function getPictureSmall() {
       inputValue -= 25;
       pictureSizeInput.value = `${inputValue}%`;
       picturePreview.style.transform = `scale(${inputValue / 100})`;
+      currentScaleValue = inputValue;
     }
   }
 }
+
 
 function getPictureBig() {
 
@@ -27,6 +30,7 @@ function getPictureBig() {
       inputValue += 25;
       pictureSizeInput.value = `${inputValue}%`;
       picturePreview.style.transform = `scale(${inputValue / 100})`;
+      currentScaleValue = inputValue;
     }
   }
 }
@@ -35,4 +39,4 @@ buttonPictureBig.addEventListener('click', getPictureBig);
 
 buttonPictureSmall.addEventListener('click', getPictureSmall);
 
-export { pictureSizeInput };
+export { pictureSizeInput, currentScaleValue };

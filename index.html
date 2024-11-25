@@ -35,12 +35,12 @@
 
             <!-- Изначальное состояние поля для загрузки изображения -->
             <fieldset class="img-upload__start">
-              <input type="file" id="upload-file" class="img-upload__input visually-hidden" name="filename" required>
+              <input type="file" id="upload-file" class="img-upload__input visually-hidden" name="filename" accept="image/jpeg, image/jpg" required>
               <label for="upload-file" class="img-upload__label  img-upload__control">Загрузить</label>
             </fieldset>
 
             <!-- Форма редактирования изображения -->
-            <div class="img-upload__overlay hidden"><!--hidden-->
+            <div class="img-upload__overlay hidden">
               <div class="img-upload__wrapper">
                 <div class="img-upload__preview-container">
 
@@ -220,7 +220,7 @@
 
   <!-- Сообщение об успешной загрузке изображения -->
   <template id="success">
-    <section class="success">
+      <section class="success">
       <div class="success__inner">
         <h2 class="success__title">Изображение успешно загружено</h2>
         <button type="button" class="success__button">Круто!</button>
@@ -236,6 +236,7 @@
     </template>
     <script src="vendor/pristine/pristine.min.js"></script>
     <script src="vendor/nouislider/nouislider.js"></script>
+    <script src="js/server-service.js" type="module" defer></script>
     <script src="js/main.js" type="module" defer></script>
 </body>
 </html>

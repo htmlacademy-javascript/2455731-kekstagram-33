@@ -1,13 +1,14 @@
 import { openFullPhoto } from './full-size-photo';
+import { loadedPictures } from './server-service';
 
 const photoList = document.querySelector('.pictures');
 
-photoList.addEventListener ('click',(evt, pictures) => {
+photoList.addEventListener ('click',(evt) => {
   const thumbnail = evt.target.closest('.picture');
   if (thumbnail) {
     const photoId = Number(thumbnail.dataset.id);
 
-    const selectedPhoto = pictures.find((photo) => photo.id === Number(photoId));
+    const selectedPhoto = loadedPictures.find((photo) => photo.id === Number(photoId));
 
     if (selectedPhoto) {
       openFullPhoto (selectedPhoto);

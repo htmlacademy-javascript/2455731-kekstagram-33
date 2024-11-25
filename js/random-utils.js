@@ -12,7 +12,6 @@ function createRandomId(min, max) {
   return function () {
     let currentValue = getRandomInteger(min, max);
     if (previousValues.length >= (max - min + 1)) {
-      //console.log(`Перебраны все числа из диапазона от ' + min + ' до ' + max`);
       return null;
     }
     while (previousValues.includes(currentValue)) {
@@ -48,4 +47,12 @@ function isDocumentEvent (evt) {
 function isEnterKey(evt) {
   return evt.key === 'Enter';
 }
-export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath, isEscapeKey, isEnterKey, isDocumentEvent };
+
+function debounce(callback, timeoutDelay = 500) {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+export { getRandomInteger, createRandomId, getRandomArrayElem, getRandomAvatarPath, getRandomUrlPath, isEscapeKey, isEnterKey, isDocumentEvent, debounce };

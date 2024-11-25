@@ -46,7 +46,6 @@ function showErrorMessage() {
   closeErrorMessageEdit();
 }
 
-
 function showSuccessMessage() {
   const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
   const successMessage = successMessageTemplate.cloneNode(true);

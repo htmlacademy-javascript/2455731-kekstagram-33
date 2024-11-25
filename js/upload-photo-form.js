@@ -41,9 +41,7 @@ function openEditorPicture() {
   document.addEventListener('keydown', onDocumentKeyDownEdit);
   const defaultEffect = 'none';
   const effectRadio = document.querySelector(`#effect-${defaultEffect}`);
-  //if (!picturePreview.src || picturePreview.src.includes('upload-default-image.jpg')) {
-  // picturePreview.src = 'img/upload-default-image.jpg';
-  //}
+
   if (effectRadio) {
     effectRadio.checked = true;
     getEffect({ target: effectRadio });
@@ -97,12 +95,6 @@ const unblockFormElements = () => {
   });
 };
 
-/*const blockFormElements = () => {
-  const formElements = document.querySelectorAll('input, textarea');
-  formElements.forEach((element) => {
-    element.disabled = true;
-  });
-};*/
 
 function clearErrors() {
   document.querySelectorAll('.pristine-error').forEach((err) => err.parentNode.removeChild(err));

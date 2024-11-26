@@ -12,9 +12,11 @@ let loadedPictures = [];
 
 
 function showErrorMessage() {
+  console.log("Ошибка должна появиться!");
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorMessageEdit = errorMessageTemplate.cloneNode(true);
-  document.body.insertAdjacentElement('beforebegin', errorMessageEdit);
+  console.log('Error message element created:', errorMessageEdit); // Логирование
+  document.body.insertAdjacentElement('beforeend', errorMessageEdit);
   const errorMessageButton = document.querySelector('.error__button');
 
   const onDocumentKeyPress = function (evt) {
@@ -44,6 +46,7 @@ function showErrorMessage() {
   }
   closeErrorMessageEdit();
 }
+
 
 function showSuccessMessage() {
   const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');

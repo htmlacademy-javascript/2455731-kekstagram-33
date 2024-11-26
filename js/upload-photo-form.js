@@ -1,6 +1,6 @@
 import { isEscapeKey } from './random-utils';
 import { validator} from './upload-form-validation';
-import { sendData, ROUTE, BASE__URL } from './server-service';
+import { sendData, ROUTE } from './server-service';
 import { pictureSizeInput } from './editor-photo-scale';
 import { effects, getEffect, picturePreview, slider} from './editor-photo-slider';
 
@@ -72,6 +72,9 @@ pictureUploadInput.addEventListener('change', (evt) => {
   if (file) {
     const imageUrl = URL.createObjectURL(file);
     picturePreview.src = imageUrl;
+    document.querySelectorAll('.effects__preview').forEach((preview) => {
+      preview.style.backgroundImage = `url(${imageUrl})`;
+    });
   }
   openEditorPicture();
 });
@@ -124,47 +127,31 @@ const setFormSubmit = (onSuccess, onError) => {
 
       sendData(ROUTE.POST__DATA, formData, () => {
 
-        fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
+        document.querySelector('.text__hashtags').value = '';
+        document.querySelector('.text__description').value = '';
+        document.querySelector('#upload-file').value = '';
+        uploadForm.reset();
 
-          method: 'POST',
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`Ошибка: ${response.status} — ${response.statusText}`);
-            }
-            return response.json();
-          })
-          .then(() => {
+        unblockSubmitButton();
+        unblockFormElements();
+        onSuccess();
+        clearErrors();
+      },
+      (err) => {
+        document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
+        document.querySelector('.text__description').value = restoreData.commentValue;
+        unblockSubmitButton();
+        unblockFormElements();
 
-            document.querySelector('.text__hashtags').value = '';
-            document.querySelector('.text__description').value = '';
-            document.querySelector('#upload-file').value = '';
-            uploadForm.reset();
+        if (restoreData.photoFile) {
+          const imgPreview = document.querySelector('.img-upload__preview img');
+          const objectURL = URL.createObjectURL(restoreData.photoFile);
+          imgPreview.src = objectURL;
+        }
 
-            unblockSubmitButton();
-            unblockFormElements();
-            onSuccess();
-            clearErrors();
-
-
-          })
-          .catch((err) => {
-            document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
-            document.querySelector('.text__description').value = restoreData.commentValue;
-            unblockSubmitButton();
-            unblockFormElements();
-            onError(err, restoreData);
-
-            if (restoreData.photoFile) {
-              const imgPreview = document.querySelector('.img-upload__preview img');
-              const objectURL = URL.createObjectURL(restoreData.photoFile);
-              imgPreview.src = objectURL;
-            }
-          },
-          onError
-          );
-      });
+        onError(err, restoreData);
+      }
+      );
     }
   });
 };

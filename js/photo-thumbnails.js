@@ -8,11 +8,6 @@ const buttonFilterDefault = document.querySelector('#filter-default');
 const buttonFilterRandom = document.querySelector('#filter-random');
 const buttonFilterDiscussed = document.querySelector('#filter-discussed');
 
-//function getUploadInput() {
-// return document.querySelector('#upload-select-image');
-//}
-
-
 const renderPhotoList = (createdPhotoObjects) => {
   const fragment = document.createDocumentFragment();
 
@@ -29,7 +24,6 @@ const renderPhotoList = (createdPhotoObjects) => {
     });
     fragment.appendChild(photoItem);
   });
-
   photoList.append(fragment);
 };
 
@@ -106,4 +100,4 @@ buttonFilterDiscussed.addEventListener('click', () => {
   handleFilterClick(getBestCommentsPictures);
 });
 
-export { renderPhotoList };
+export { renderPhotoList, clearPicturesContainer };

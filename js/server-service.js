@@ -1,7 +1,6 @@
 import { renderPhotoList } from './photo-thumbnails';
-import { isEscapeKey } from './random-utils';
 import { clearErrors } from './upload-photo-form';
-
+import { isEscapeKey } from './random-utils';
 const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 const ROUTE = {
   GET__DATA: '/data',
@@ -113,7 +112,6 @@ function loadingData(url, onError) {
     })
 
     .then((pictures) => {
-
       pictureFilter.classList.remove('img-filters--inactive');
       loadedPictures = pictures.slice(0, PICTURES__COUNT);
       renderPhotoList(loadedPictures);
@@ -123,8 +121,8 @@ function loadingData(url, onError) {
     });
 }
 
-const testError = new Error('Тестовая ошибка');
-getErrorMessage(testError);
+//const testError = new Error('Тестовая ошибка');
+//getErrorMessage(testError);
 
 
 const sendData = (url, body, onSuccess, onError, restoreData) => {

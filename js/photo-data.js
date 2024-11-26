@@ -32,4 +32,3 @@ function createPhotoObject() {
 const photoObjectsSet = (count) => Array.from({ length: count }, createPhotoObject);
 
 export { photoObjectsSet };
-

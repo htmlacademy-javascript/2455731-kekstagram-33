@@ -6,16 +6,15 @@ const ROUTE = {
   GET__DATA: '/data',
   POST__DATA: '/',
 };
+
 const PICTURES__COUNT = 25;
 const pictureFilter = document.querySelector('.img-filters');
 let loadedPictures = [];
 
 
 function showErrorMessage() {
-  console.log("Ошибка должна появиться!");
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorMessageEdit = errorMessageTemplate.cloneNode(true);
-  console.log('Error message element created:', errorMessageEdit); // Логирование
   document.body.insertAdjacentElement('beforeend', errorMessageEdit);
   const errorMessageButton = document.querySelector('.error__button');
 
@@ -123,9 +122,6 @@ function loadingData(url, onError) {
       onError(err);
     });
 }
-
-//const testError = new Error('Тестовая ошибка');
-//getErrorMessage(testError);
 
 
 const sendData = (url, body, onSuccess, onError, restoreData) => {

@@ -80,13 +80,11 @@ pictureUploadInput.addEventListener('change', (evt) => {
 });
 
 const blockSubmitButton = () => {
-  //console.log('Blocking submit button');
   uploadSubmitButton.disabled = true;
   uploadSubmitButton.textContent = submitButtonText.SENDING;
 };
 
 const unblockSubmitButton = () => {
-  //console.log('Unblocking submit button');
   uploadSubmitButton.disabled = false;
   uploadSubmitButton.textContent = submitButtonText.IDLE;
 };
@@ -99,12 +97,12 @@ const unblockFormElements = () => {
 };
 
 
-function clearErrors() {
+/*function clearErrors() {
   document.querySelectorAll('.pristine-error').forEach((err) => err.parentNode.removeChild(err));
   document.querySelectorAll('.img-upload__field-wrapper--error').forEach((wrapper) => {
     wrapper.classList.remove('img-upload__field-wrapper--error');
   });
-}
+}*/
 
 const setFormSubmit = (onSuccess, onError) => {
 
@@ -115,18 +113,14 @@ const setFormSubmit = (onSuccess, onError) => {
     if (isValid) {
       blockSubmitButton();
 
-
       const hashtagValue = document.querySelector('.text__hashtags').value;
       const commentValue = document.querySelector('.text__description').value;
       const photoFile = document.querySelector('#upload-file').files[0];
       const formData = new FormData(evt.target);
       const restoreData = { hashtagValue, commentValue, photoFile };
 
-      //formData.append('scale', currentScaleValue);
-      //formData.append('effect', selectedEffectValue);
-
       sendData(ROUTE.POST__DATA, formData, () => {
-
+        onSuccess();
         document.querySelector('.text__hashtags').value = '';
         document.querySelector('.text__description').value = '';
         document.querySelector('#upload-file').value = '';
@@ -134,8 +128,8 @@ const setFormSubmit = (onSuccess, onError) => {
 
         unblockSubmitButton();
         unblockFormElements();
-        onSuccess();
-        clearErrors();
+
+        //clearErrors();
       },
       (err) => {
         document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
@@ -148,7 +142,6 @@ const setFormSubmit = (onSuccess, onError) => {
           const objectURL = URL.createObjectURL(restoreData.photoFile);
           imgPreview.src = objectURL;
         }
-
         onError(err, restoreData);
       }
       );
@@ -158,4 +151,4 @@ const setFormSubmit = (onSuccess, onError) => {
 
 closeEditor.addEventListener('click', closeEditorPicture);
 
-export { openEditorPicture, closeEditorPicture, setFormSubmit, clearErrors };
+export { openEditorPicture, closeEditorPicture, setFormSubmit };

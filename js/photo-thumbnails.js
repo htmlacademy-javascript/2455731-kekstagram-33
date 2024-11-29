@@ -1,4 +1,4 @@
-import { loadedPictures } from './server-service';
+import { getLoadedPictures } from './server-service';
 import { openFullPhoto } from './full-size-photo';
 import { photoList } from './gallery';
 import { getRandomArrayElem, debounce } from './random-utils';
@@ -43,11 +43,13 @@ function clearPicturesContainer() {
 }
 
 function getDefaultPictures() {
+  const loadedPictures = getLoadedPictures();
   return loadedPictures && loadedPictures.length > 0 ? loadedPictures : [];
 }
 
 
 function getRandomPictures() {
+  const loadedPictures = getLoadedPictures();
   const randomPictures = [];
   const randomPicturesEdit = loadedPictures.slice();
   const randomMaxIteration = 25;
@@ -66,6 +68,7 @@ function getRandomPictures() {
 }
 
 function getBestCommentsPictures() {
+  const loadedPictures = getLoadedPictures();
   return loadedPictures.slice().sort((a, b) => b.comments.length - a.comments.length);
 }
 

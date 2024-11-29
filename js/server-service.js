@@ -1,21 +1,29 @@
 import { renderPhotoList } from './photo-thumbnails';
+//import { clearErrors } from './upload-photo-form';
 import { isEscapeKey } from './random-utils';
-import { clearErrors } from './upload-photo-form';
-
 const BASE__URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 const ROUTE = {
   GET__DATA: '/data',
   POST__DATA: '/',
 };
+
 const PICTURES__COUNT = 25;
 const pictureFilter = document.querySelector('.img-filters');
 let loadedPictures = [];
+
+function setLoadedPictures(pictures) {
+  loadedPictures = pictures.slice(0, PICTURES__COUNT);
+}
+
+function getLoadedPictures() {
+  return loadedPictures.slice();
+}
 
 
 function showErrorMessage() {
   const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorMessageEdit = errorMessageTemplate.cloneNode(true);
-  document.body.insertAdjacentElement('beforebegin', errorMessageEdit);
+  document.body.insertAdjacentElement('beforeend', errorMessageEdit);
   const errorMessageButton = document.querySelector('.error__button');
 
   const onDocumentKeyPress = function (evt) {
@@ -46,6 +54,7 @@ function showErrorMessage() {
   closeErrorMessageEdit();
 }
 
+
 function showSuccessMessage() {
   const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
   const successMessage = successMessageTemplate.cloneNode(true);
@@ -67,7 +76,7 @@ function showSuccessMessage() {
 
   const onDocumentClick = function (evt) {
     const messageElement = document.querySelector('[data-id="success-message"]');
-    if (messageElement.contains(evt.target)) {
+    if (messageElement && evt.target === messageElement) {
       removeSuccessMessage();
     }
   };
@@ -113,18 +122,14 @@ function loadingData(url, onError) {
     })
 
     .then((pictures) => {
-
       pictureFilter.classList.remove('img-filters--inactive');
-      loadedPictures = pictures.slice(0, PICTURES__COUNT);
-      renderPhotoList(loadedPictures);
+      setLoadedPictures(pictures);
+      renderPhotoList(getLoadedPictures());
     })
     .catch((err) => {
       onError(err);
     });
 }
-
-const testError = new Error('Тестовая ошибка');
-getErrorMessage(testError);
 
 
 const sendData = (url, body, onSuccess, onError, restoreData) => {
@@ -140,7 +145,7 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
     })
     .then(() => {
       onSuccess();
-      clearErrors();
+      //clearErrors();
     })
     .catch((err) => {
       if (typeof onError === 'function') {
@@ -149,4 +154,4 @@ const sendData = (url, body, onSuccess, onError, restoreData) => {
     });
 };
 
-export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, loadedPictures };
+export { loadingData, getErrorMessage, showSuccessMessage, showErrorMessage, sendData, ROUTE, BASE__URL, getLoadedPictures };

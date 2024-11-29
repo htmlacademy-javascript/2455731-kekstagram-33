@@ -15,7 +15,7 @@ function validateComments(value) {
 
 function isPictureFormatValid() {
   const file = uploadFileInput.files[0];
-  return file ? /\.(jpg|jpeg)$/i.test(file.name) : false;
+  return file ? /\.(jpg|jpeg|png)$/i.test(file.name) : false;
 }
 
 validator.addValidator(uploadForm.querySelector('.text__hashtags'), (value) => {
@@ -44,7 +44,7 @@ validator.addValidator(uploadForm.querySelector('.text__hashtags'), (value) => {
 }, 'Хэштеги не должны повторяться');
 
 
-validator.addValidator(uploadFileInput, isPictureFormatValid, 'Только изображения формата JPEG допускаются к загрузке');
+validator.addValidator(uploadFileInput, isPictureFormatValid, 'Только изображения формата JPEG, JPG, PNG допускаются к загрузке');
 validator.addValidator(uploadForm.querySelector('.text__description'), validateComments, 'Максимальная длина комментария - 140 символов');
 
 export { validator};

@@ -1,4 +1,4 @@
-import { loadedPictures } from './server-service';
+import { getLoadedPictures } from './server-service';
 import { openFullPhoto } from './full-size-photo';
 import { photoList } from './gallery';
 import { getRandomArrayElem, debounce } from './random-utils';
@@ -7,11 +7,6 @@ const templateContent = document.querySelector('#picture').content.querySelector
 const buttonFilterDefault = document.querySelector('#filter-default');
 const buttonFilterRandom = document.querySelector('#filter-random');
 const buttonFilterDiscussed = document.querySelector('#filter-discussed');
-
-//function getUploadInput() {
-// return document.querySelector('#upload-select-image');
-//}
-
 
 const renderPhotoList = (createdPhotoObjects) => {
   const fragment = document.createDocumentFragment();
@@ -29,7 +24,6 @@ const renderPhotoList = (createdPhotoObjects) => {
     });
     fragment.appendChild(photoItem);
   });
-
   photoList.append(fragment);
 };
 
@@ -49,11 +43,13 @@ function clearPicturesContainer() {
 }
 
 function getDefaultPictures() {
+  const loadedPictures = getLoadedPictures();
   return loadedPictures && loadedPictures.length > 0 ? loadedPictures : [];
 }
 
 
 function getRandomPictures() {
+  const loadedPictures = getLoadedPictures();
   const randomPictures = [];
   const randomPicturesEdit = loadedPictures.slice();
   const randomMaxIteration = 25;
@@ -72,6 +68,7 @@ function getRandomPictures() {
 }
 
 function getBestCommentsPictures() {
+  const loadedPictures = getLoadedPictures();
   return loadedPictures.slice().sort((a, b) => b.comments.length - a.comments.length);
 }
 
@@ -106,4 +103,4 @@ buttonFilterDiscussed.addEventListener('click', () => {
   handleFilterClick(getBestCommentsPictures);
 });
 
-export { renderPhotoList };
+export { renderPhotoList, clearPicturesContainer };

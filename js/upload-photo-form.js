@@ -1,6 +1,6 @@
 import { isEscapeKey } from './random-utils';
 import { validator} from './upload-form-validation';
-import { sendData, ROUTE, BASE__URL } from './server-service';
+import { sendData, ROUTE } from './server-service';
 import { pictureSizeInput } from './editor-photo-scale';
 import { effects, getEffect, picturePreview, slider} from './editor-photo-slider';
 
@@ -72,18 +72,19 @@ pictureUploadInput.addEventListener('change', (evt) => {
   if (file) {
     const imageUrl = URL.createObjectURL(file);
     picturePreview.src = imageUrl;
+    document.querySelectorAll('.effects__preview').forEach((preview) => {
+      preview.style.backgroundImage = `url(${imageUrl})`;
+    });
   }
   openEditorPicture();
 });
 
 const blockSubmitButton = () => {
-  //console.log('Blocking submit button');
   uploadSubmitButton.disabled = true;
   uploadSubmitButton.textContent = submitButtonText.SENDING;
 };
 
 const unblockSubmitButton = () => {
-  //console.log('Unblocking submit button');
   uploadSubmitButton.disabled = false;
   uploadSubmitButton.textContent = submitButtonText.IDLE;
 };
@@ -96,12 +97,12 @@ const unblockFormElements = () => {
 };
 
 
-function clearErrors() {
+/*function clearErrors() {
   document.querySelectorAll('.pristine-error').forEach((err) => err.parentNode.removeChild(err));
   document.querySelectorAll('.img-upload__field-wrapper--error').forEach((wrapper) => {
     wrapper.classList.remove('img-upload__field-wrapper--error');
   });
-}
+}*/
 
 const setFormSubmit = (onSuccess, onError) => {
 
@@ -112,63 +113,42 @@ const setFormSubmit = (onSuccess, onError) => {
     if (isValid) {
       blockSubmitButton();
 
-
       const hashtagValue = document.querySelector('.text__hashtags').value;
       const commentValue = document.querySelector('.text__description').value;
       const photoFile = document.querySelector('#upload-file').files[0];
       const formData = new FormData(evt.target);
       const restoreData = { hashtagValue, commentValue, photoFile };
 
-      //formData.append('scale', currentScaleValue);
-      //formData.append('effect', selectedEffectValue);
-
       sendData(ROUTE.POST__DATA, formData, () => {
+        onSuccess();
+        document.querySelector('.text__hashtags').value = '';
+        document.querySelector('.text__description').value = '';
+        document.querySelector('#upload-file').value = '';
+        uploadForm.reset();
 
-        fetch(`${BASE__URL}${ROUTE.POST__DATA}`, {
+        unblockSubmitButton();
+        unblockFormElements();
 
-          method: 'POST',
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`Ошибка: ${response.status} — ${response.statusText}`);
-            }
-            return response.json();
-          })
-          .then(() => {
+        //clearErrors();
+      },
+      (err) => {
+        document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
+        document.querySelector('.text__description').value = restoreData.commentValue;
+        unblockSubmitButton();
+        unblockFormElements();
 
-            document.querySelector('.text__hashtags').value = '';
-            document.querySelector('.text__description').value = '';
-            document.querySelector('#upload-file').value = '';
-            uploadForm.reset();
-
-            unblockSubmitButton();
-            unblockFormElements();
-            onSuccess();
-            clearErrors();
-
-
-          })
-          .catch((err) => {
-            document.querySelector('.text__hashtags').value = restoreData.hashtagValue;
-            document.querySelector('.text__description').value = restoreData.commentValue;
-            unblockSubmitButton();
-            unblockFormElements();
-            onError(err, restoreData);
-
-            if (restoreData.photoFile) {
-              const imgPreview = document.querySelector('.img-upload__preview img');
-              const objectURL = URL.createObjectURL(restoreData.photoFile);
-              imgPreview.src = objectURL;
-            }
-          },
-          onError
-          );
-      });
+        if (restoreData.photoFile) {
+          const imgPreview = document.querySelector('.img-upload__preview img');
+          const objectURL = URL.createObjectURL(restoreData.photoFile);
+          imgPreview.src = objectURL;
+        }
+        onError(err, restoreData);
+      }
+      );
     }
   });
 };
 
 closeEditor.addEventListener('click', closeEditorPicture);
 
-export { openEditorPicture, closeEditorPicture, setFormSubmit, clearErrors };
+export { openEditorPicture, closeEditorPicture, setFormSubmit };
